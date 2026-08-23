@@ -8,6 +8,36 @@ import type {
   OpenAIToolCall,
 } from './types';
 
+/**
+ * Sanitizes JSON Schema for OpenAI function parameters compatibility.
+ * Removes Anthropic/JSON-Schema-specific metadata that some OpenAI-compatible backends reject.
+ */
+function sanitizeSchemaForOpenAI(inputSchema?: Record<string, unknown>): Record<string, unknown> {
+  if (!inputSchema || typeof inputSchema !== 'object') {
+    return {
+      type: 'object',
+      properties: {},
+    };
+  }
+
+  const schemaCopy: Record<string, unknown> = { ...inputSchema };
+
+  // Remove schema draft identifiers and metadata not supported by strict OpenAI parsers
+  delete schemaCopy['$schema'];
+  delete schemaCopy['$id'];
+  delete schemaCopy['title'];
+
+  if (!schemaCopy.type) {
+    schemaCopy.type = 'object';
+  }
+
+  if (schemaCopy.type === 'object' && !schemaCopy.properties) {
+    schemaCopy.properties = {};
+  }
+
+  return schemaCopy;
+}
+
 export function convertAnthropicToOpenAI(
   anthropicReq: AnthropicMessagesRequest,
   targetModelName: string,
@@ -73,18 +103,18 @@ export function convertAnthropicToOpenAI(
             resultContent = tr.content
               .map((c) => (c.type === 'text' ? c.text : JSON.stringify(c)))
               .join('\n');
-          } else {
+          } else if (tr.content !== undefined && tr.content !== null) {
             resultContent = JSON.stringify(tr.content);
           }
 
           if (tr.is_error) {
-            resultContent = `Error: ${resultContent}`;
+            resultContent = resultContent ? `Error: ${resultContent}` : 'Error: Tool execution failed';
           }
 
           openAIMessages.push({
             role: 'tool',
             tool_call_id: tr.tool_use_id,
-            content: resultContent,
+            content: resultContent || '(empty result)',
           });
         }
 
@@ -148,7 +178,7 @@ export function convertAnthropicToOpenAI(
       function: {
         name: t.name,
         description: t.description,
-        parameters: t.input_schema || { type: 'object', properties: {} },
+        parameters: sanitizeSchemaForOpenAI(t.input_schema),
       },
     }));
   }
@@ -187,7 +217,7 @@ export function convertAnthropicToOpenAI(
     openAIReq.max_completion_tokens = anthropicReq.max_tokens;
   }
 
-  // Temperature & Top P (omit or default for pure reasoning models if needed)
+  // Temperature & Top P
   if (anthropicReq.temperature !== undefined) {
     openAIReq.temperature = anthropicReq.temperature;
   }
