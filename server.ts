@@ -24,7 +24,7 @@ app.all('*', async (c) => {
   return handler(c.req.raw);
 });
 
-const port = Number(process.env.PORT) || 3000;
+const port = Number(process.env.PORT) || 1337;
 console.log(`🤖 Claude Code AI Gateway running at http://localhost:${port}`);
 console.log(`📡 Anthropic Endpoint: http://localhost:${port}/v1/messages`);
 console.log(`📊 Dashboard UI: http://localhost:${port}/`);

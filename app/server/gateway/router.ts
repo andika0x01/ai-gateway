@@ -44,6 +44,7 @@ export async function handleMessagesRequest(
       supports_thinking: m.supports_thinking,
       supports_vision: m.supports_vision,
       max_tokens: m.max_tokens,
+      model_enabled: m.enabled,
       provider_type: m.provider_type,
       provider_base_url: m.provider_base_url,
       provider_api_key: m.provider_api_key,

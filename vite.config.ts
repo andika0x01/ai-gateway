@@ -36,6 +36,9 @@ function honoGatewayPlugin(): Plugin {
 }
 
 export default defineConfig({
+  server: {
+    port: 1337,
+  },
   plugins: [tailwindcss(), reactRouter(), honoGatewayPlugin()],
   resolve: {
     tsconfigPaths: true,

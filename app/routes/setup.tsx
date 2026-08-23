@@ -11,7 +11,7 @@ export default function SetupPage() {
     setTimeout(() => setCopiedId(null), 1500);
   };
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:1337';
 
   const bash = `export ANTHROPIC_BASE_URL="${origin}"
 export ANTHROPIC_API_KEY="gateway"

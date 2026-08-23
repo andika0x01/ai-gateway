@@ -32,7 +32,7 @@ Start the development server with HMR:
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Your application will be available at `http://localhost:1337`.
 
 ## Building for Production
 
@@ -52,7 +52,7 @@ To build and run using Docker:
 docker build -t my-app .
 
 # Run the container
-docker run -p 3000:3000 my-app
+docker run -p 1337:1337 my-app
 ```
 
 The containerized application can be deployed to any platform that supports Docker, including:
