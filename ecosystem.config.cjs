@@ -2,8 +2,10 @@ module.exports = {
   apps: [
     {
       name: 'ai-gateway',
-      script: './node_modules/tsx/dist/cli.mjs',
-      args: 'server.ts',
+      script: 'server.ts',
+      interpreter: 'node',
+      node_args: '--import tsx',
+      windowsHide: true,
       cwd: __dirname,
       instances: 1,
       autorestart: true,
